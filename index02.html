@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پازل تصویری 3x3 - نسخه ساده</title>
+    <style>
+        body,
+        html {
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            background-color: #c7c7c7;
+            background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%23404040' fill-opacity='0.4'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            font-family: cursive;
+        }
+
+        #container {
+            width: 435px;
+            height: 450px;
+            padding: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .me {
+            position: relative;
+            background-size: 400px 400px;
+            background-repeat: no-repeat;
+            display: inline-block;
+            margin: 2px;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .full {
+            height: 400px;
+            width: 400px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .me_0 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -0px -0px;
+        }
+
+        .me_1 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -133.33px -0px;
+        }
+
+        .me_2 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -266.66px -0px;
+        }
+
+        .me_3 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -0px -133.33px;
+        }
+
+        .me_4 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -133.33px -133.33px;
+        }
+
+        .me_5 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -266.66px -133.33px;
+        }
+
+        .me_6 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -0px -266.66px;
+        }
+
+        .me_7 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -133.33px -266.66px;
+        }
+
+        .me_8 {
+            height: 133.33px;
+            width: 133.33px;
+            background-position: -266.66px -266.66px;
+        }
+
+        .prevent_click {
+            pointer-events: none;
+        }
+
+        .correct {
+            border-radius: 0px;
+            box-shadow: 0 0 0 transparent, 0 0 0 transparent;
+            animation: corect .5s ease;
+            animation-delay: .2s;
+        }
+
+        @keyframes corect {
+            0% {
+                transform: scale(1);
+                border-radius: 10px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            }
+
+            50% {
+                transform: scale(1.15);
+                border-radius: 5px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), 0 8px 8px rgba(0, 0, 0, 0.22);
+            }
+
+            100% {
+                transform: scale(1);
+                border-radius: 0px;
+                box-shadow: 0 0 0 transparent, 0 0 0 transparent;
+            }
+        }
+
+        .pre_img {
+            margin-top: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pre_img li {
+            display: inline-block;
+            list-style: none;
+        }
+
+        .pre_img li img {
+            width: 90px;
+            height: 60px;
+            position: relative;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .pre_img li img:hover {
+            transform: scale(1.05);
+        }
+
+        .cover {
+            display: none;
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+
+        .score {
+            margin: 15% auto;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            width: 320px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            position: relative;
+            text-align: center;
+        }
+
+        #scr_head {
+            text-align: center;
+            font-weight: 600;
+            font-size: 28px;
+            color: #3d3d3d;
+            margin-bottom: 20px;
+        }
+
+        .start {
+            padding: 15px 40px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .reset {
+            padding: 15px 40px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .OK {
+            padding: 10px 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .button {
+            border-radius: 10px;
+            font-size: 22px;
+            color: #FFF;
+            text-decoration: none;
+            background-color: #E74C3C;
+            border-bottom: 5px solid #BD3E31;
+            text-shadow: 0px -2px #BD3E31;
+            transition: all 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #ff6b5a;
+        }
+
+        .button:active {
+            transform: translateY(4px);
+            border-bottom: 1px solid #BD3E31;
+        }
+
+        .i {
+            text-align: center;
+            font-weight: 550;
+            color: #3c3c3c;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <a href="#" class="button start">شروع بازی</a>
+        <div class="box">
+            <div class="me full"></div>
+        </div>
+
+        <div class="pre_img">
+            <li data-bid="0"><img src="https://preview.ibb.co/kMdsfm/kfp.png" alt="پازل 1"></li>
+        </div>
+        <a href="#" class="button reset">شروع مجدد</a>
+    </div>
+
+    <div class="cover">
+        <div class="score">
+            <p id="scr_head">&#127881; پازل حل شد! &#127881;</p>
+            <button class="button OK">تایید</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var box = $(".box"),
+                orginal = [0, 1, 2, 3, 4, 5, 6, 7, 8], // 9 tiles for 3x3 puzzle
+                temp = orginal,
+                x = [],
+                upIMG,
+                images = [
+                    "https://preview.ibb.co/kMdsfm/kfp.png"
+                ],
+                img = 0;
+
+            $('.me').css({ "background-image": 'url(' + images[0] + ')' });
+
+            $(".start").click(function () {
+                $(".start").addClass('prevent_click');
+                $(".start").delay(100).slideUp(500);
+                $(".full").hide();
+                $(".pre_img").addClass("prevent_click");
+
+                Start();
+                return 0;
+            });
+
+            function Start() {
+                randomTile();
+                changeBG(img);
+                var count = 0,
+                    a,
+                    b;
+
+                $(".me").click(function () {
+                    count++;
+                    if (count == 1) {
+                        a = $(this).attr("data-bid");
+                        $('.me_' + a).css({ "opacity": ".65" });
+                    } else {
+                        b = $(this).attr("data-bid");
+                        $('.me_' + a).css({ "opacity": "1" });
+                        if (a == b) {
+                            // Do nothing if same tile clicked twice
+                        } else {
+                            // Swap classes
+                            $(".me_" + a)
+                                .addClass("me_" + b)
+                                .removeClass("me_" + a);
+                            $(this)
+                                .addClass("me_" + a)
+                                .removeClass("me_" + b);
+
+                            // Update data-bid attributes
+                            $(".me_" + a).attr("data-bid", a);
+                            $(".me_" + b).attr("data-bid", b);
+                        }
+                        swapping(a, b);
+                        checkCorrect(a);
+                        checkCorrect(b);
+                        a = b = count = 0;
+                    }
+                    if (arraysEqual(x)) {
+                        showScore();
+                        return 0;
+                    }
+                });
+                return 0;
+            }
+
+            function randomTile() {
+                // Reset arrays
+                temp = [...orginal];
+                x = [];
+
+                // Shuffle the array
+                for (var i = orginal.length - 1; i >= 0; i--) {
+                    var flag = getRandom(0, i);
+                    x[i] = temp[flag];
+                    temp[flag] = temp[i];
+                    temp[i] = x[i];
+                }
+
+                // Create tiles
+                for (var i = 0; i < orginal.length; i++) {
+                    box.append(
+                        '<div class="me me_' + x[i] + ' tile" data-bid="' + x[i] + '"></div>'
+                    );
+                    // Add line break after every 3 tiles (for 3x3 grid)
+                    if ((i + 1) % 3 == 0) box.append("<br>");
+                }
+                return 0;
+            }
+
+            function arraysEqual(arr) {
+                for (var i = orginal.length - 1; i >= 0; i--) {
+                    if (arr[i] != i) return false;
+                }
+                return true;
+            }
+
+            function checkCorrect(N1) {
+                var pos = x.indexOf(parseInt(N1, 10));
+                if (pos != N1) {
+                    return;
+                }
+                $(".me_" + N1).addClass("correct prevent_click");
+                return;
+            }
+
+            function swapping(N1, N2) {
+                var first = x.indexOf(parseInt(N1, 10)),
+                    second = x.indexOf(parseInt(N2, 10));
+                x[first] = parseInt(N2, 10);
+                x[second] = parseInt(N1, 10);
+                return 0;
+            }
+
+            function getRandom(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function changeBG(img) {
+                if (img != 3) {
+                    $('.me').css({
+                        "background-image": "url(" + images[img] + ")"
+                    });
+                    return;
+                } else {
+                    $('.me').css({ "background-image": "url(" + upIMG + ")" });
+                }
+            }
+
+            $('.pre_img li').hover(function () {
+                img = $(this).attr("data-bid");
+                changeBG(img);
+            });
+
+            function showScore() {
+                setTimeout(function () {
+                    $('.cover').slideDown(350);
+                }, 800);
+                return 0;
+            }
+
+            $('.OK').click(function () {
+                $('.cover').slideUp(350);
+            });
+
+            $('.reset').click(function () {
+                $(".tile").remove();
+                $("br").remove();
+                $(".full").show();
+                $(".start").show();
+                $(".pre_img, .start").removeClass("prevent_click");
+
+                temp = [...orginal];
+                x = [];
+                return 0;
+            });
+
+            $("#upfile1").click(function () {
+                $("#file1").trigger('click');
+            });
+
+            $("#file1").change(function () {
+                readURL(this);
+            });
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        upIMG = e.target.result;
+                        img = 3;
+                        changeBG(3);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
